@@ -18,7 +18,7 @@ func main() {
 		fmt.Println(err.Error())
 	}
 	http.HandleFunc("/linemadi", linemadi)
-	http.ListenAndServe("0.0.0.0:6969", nil)
+	http.ListenAndServe("0.0.0.0:"+os.Getenv("PORT"), nil)
 }
 
 func linemadi(w http.ResponseWriter, r *http.Request) {
