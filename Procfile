@@ -1,0 +1,1 @@
+web: bad-bot
