@@ -1,14 +1,17 @@
+## build
 FROM golang:1.11.5-alpine as builder
 LABEL maintainer="Grean-Developers-Family"
 
+WORKDIR /go/src/app
+COPY . .
 RUN apk add --no-cache git \
     && go get github.com/line/line-bot-sdk-go/linebot
-WORKDIR /go/src/app
-ADD . .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
+RUN GO_ENABLED=0 GOOS=linux go install .
 
-FROM alpine:latest
-WORKDIR /go/src/app
-COPY --from=builder /go/src/app/app .
-CMD [ "./app" ]
+## app
+FROM alpine
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
+WORKDIR /app
+COPY --from=builder /go/bin/app .
+CMD [ "/app/app" ]
 EXPOSE 6969
