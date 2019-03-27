@@ -1,10 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	_ "github.com/lib/pq"
 
 	"github.com/line/line-bot-sdk-go/linebot"
 )
@@ -29,6 +32,12 @@ func linemadi(w http.ResponseWriter, r *http.Request) {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
+				if connectDB() {
+					_, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("Connect to database successfully")).Do()
+					if err != nil {
+						log.Print(err)
+					}
+				}
 				_, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do()
 				if err != nil {
 					log.Print(err)
@@ -37,3 +46,28 @@ func linemadi(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func connectDB() bool {
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+
+	fmt.Println("Successfully connected!")
+	return true
+}
+
+// 1st sprint
+// [] add player
+// [] remove player
+// [] list player
+// [] check bill
+//

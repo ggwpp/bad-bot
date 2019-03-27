@@ -5,7 +5,7 @@ LABEL maintainer="Grean-Developers-Family"
 WORKDIR /go/src/app
 COPY . .
 RUN apk add --no-cache git \
-    && go get github.com/line/line-bot-sdk-go/linebot
+    && go get -d -v
 RUN GO_ENABLED=0 GOOS=linux go install .
 
 ## app
